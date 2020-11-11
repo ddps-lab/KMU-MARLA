@@ -55,7 +55,11 @@ def lambda_handler(event, context):
 
     paginator = s3_client.get_paginator('list_objects_v2')
     files = []
+    download_start = time.time()
     pages = paginator.paginate(Bucket=job_bucket, Prefix=job_id)
+    download_time = time.time() - download_start
+    print('mapper_download_time: %s sec' % download_time)
+    
     for page in pages:
         files += page['Contents']
     for mf in files:
@@ -85,6 +89,11 @@ def lambda_handler(event, context):
     }
     fname = "%s/%s%s" % (job_id, TASK_REDUCER_PREFIX, r_id)
     print('fname: ', fname)
+
+    upload_start = time.time()
     write_to_s3(job_bucket, fname, json.dumps(results), metadata)
+    upload_time = time.time() - upload_start
+    print('reducer_upload_time: %s sec' % upload_time)
+
     write_to_s3(job_bucket, job_id + "/reducer_success/" + str(r_id), "", metadata)
     return pret

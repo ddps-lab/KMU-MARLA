@@ -54,9 +54,12 @@ def lambda_handler(event, context):
     print('src_key: ', src_keys)
 
     # 모든 key를 다운로드하고 Map을 처리합니다.
+    download_time = 0
     for key in src_keys:
+        download_start = time.time()
         response = s3_client.get_object(Bucket=src_bucket, Key=key)
         contents = response['Body'].read()
+        download_time += (time.time() - download_start)
         # Map Function
         for line in contents.decode().split('\n')[:-1]:
             line_count += 1
@@ -72,6 +75,8 @@ def lambda_handler(event, context):
                         output[srcIp[0]][srcIp] += float(data[3])
             except Exception as e:
                 print('error', e)
+    print('mapper_download_time: %s sec' % download_time)
+
     print('output: ', output)
     time_in_secs = (time.time() - start_time)
 
@@ -89,9 +94,12 @@ def lambda_handler(event, context):
     print("metadata", metadata)
 
     # 이 부분을 efs로 변경 시도 해야 할 듯 함.
-
+    upload_time = 0
     for fname in mapper_fname:
+        upload_start = time.time()
         write_to_s3(job_bucket, mapper_fname[fname], json.dumps(output[fname]), metadata)
+        upload_time += (time.time() - upload_start)
         write_to_s3(job_bucket, job_id + "/reducer_count/" + fname, '', {})
         write_to_s3(job_bucket, job_id + "/reducer_success/" + 'init', '', {})
+    print('mapper_upload_time: %s sec' % upload_time)
     return pret

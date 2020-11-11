@@ -202,7 +202,7 @@ pool.join()
 print("all the mappers finished ...")
 
 # Mapper Lambda function 삭제
-# l_mapper.delete_function()
+l_mapper.delete_function()
 
 # 실제 Reduce 호출은 reducerCoordinator에서 실행
 
@@ -213,10 +213,10 @@ total_s3_put_ops = 0
 s3_storage_hours = 0
 total_lines = 0
 
-for output in mapper_outputs:
-    total_s3_get_ops += int(output[0])
-    total_lines += int(output[1])
-    total_lambda_secs += float(output[2])
+# for output in mapper_outputs:
+#     total_s3_get_ops += int(output[0])
+#     total_lines += int(output[1])
+#     total_lambda_secs += float(output[2])
 
 mapper_lambda_time = total_lambda_secs
 
@@ -281,5 +281,5 @@ print("Total Latency: ", total_lambda_secs)
 print("Result Output Lines:", total_lines)
 
 # Reducer Lambda function 삭제
-# l_reducer.delete_function()
-# l_rc.delete_function()
+l_reducer.delete_function()
+l_rc.delete_function()
