@@ -104,6 +104,7 @@ all_keys = []
 for obj in s3.Bucket(bucket).objects.filter(Prefix=config["prefix"]).all():
     all_keys.append(obj)
 
+print(all_keys)
 bsize = lambdautils.compute_batch_size(all_keys, lambda_memory, concurrent_lambdas)
 batches = lambdautils.batch_creator(all_keys, bsize)
 n_mappers = len(batches)  # 최종적으로 구한 batches의 개수가 mapper로 결정
@@ -202,7 +203,7 @@ pool.join()
 print("all the mappers finished ...")
 
 # Mapper Lambda function 삭제
-l_mapper.delete_function()
+# l_mapper.delete_function()
 
 # 실제 Reduce 호출은 reducerCoordinator에서 실행
 
@@ -213,10 +214,10 @@ total_s3_put_ops = 0
 s3_storage_hours = 0
 total_lines = 0
 
-# for output in mapper_outputs:
-#     total_s3_get_ops += int(output[0])
-#     total_lines += int(output[1])
-#     total_lambda_secs += float(output[2])
+for output in mapper_outputs:
+    total_s3_get_ops += int(output[0])
+    total_lines += int(output[1])
+    total_lambda_secs += float(output[2])
 
 mapper_lambda_time = total_lambda_secs
 
@@ -239,11 +240,7 @@ while True:
     # check job done
     if len(reducer_count) == len(reducer_success) - 1:
         print("job done")
-        break
-
-    if job_id + "/result" in keys:
-        print("job done")
-        reducer_lambda_time += float(s3.Object(job_bucket, job_id + "/result").metadata['processingtime'])
+        # reducer_lambda_time += float(s3.Object(job_bucket, job_id + "/result").metadata['processingtime'])
         for key in keys:
             if "task/reducer" in key:
                 reducer_lambda_time += float(s3.Object(job_bucket, key).metadata['processingtime'])
@@ -281,5 +278,5 @@ print("Total Latency: ", total_lambda_secs)
 print("Result Output Lines:", total_lines)
 
 # Reducer Lambda function 삭제
-l_reducer.delete_function()
-l_rc.delete_function()
+# l_reducer.delete_function()
+# l_rc.delete_function()

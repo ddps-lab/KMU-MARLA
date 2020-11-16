@@ -1,9 +1,9 @@
 {
-      "bucket": "big-data-benchmark",
-      "prefix": "pavlo/text/1node/uservisits/",
-      "jobBucket": "mr-lambda1",
+      "bucket": "jg-marla-input1",
+      "prefix": "",
+      "jobBucket": "jg-marla-output1",
       "region": "us-east-1",
-      "lambdaMemory": 1536,
+      "lambdaMemory": 512,
       "concurrentLambdas": 1000,
       "lambda_read_timeout": 300,
       "boto_max_connections": 1000,

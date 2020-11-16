@@ -56,14 +56,16 @@ def lambda_handler(event, context):
     paginator = s3_client.get_paginator('list_objects_v2')
     files = []
     download_start = time.time()
+    print('download_start_time: ', download_start)
     pages = paginator.paginate(Bucket=job_bucket, Prefix=job_id)
     download_time = time.time() - download_start
+    print('download_end_time: ', time.time())
     print('mapper_download_time: %s sec' % download_time)
-    
+
     for page in pages:
         files += page['Contents']
     for mf in files:
-        if "task/mapper/" + str(r_id) in mf["Key"]:
+        if "task/mapper/" + r_id in mf["Key"]:
             isMapped = True
             key = mf["Key"]
             response = s3_client.get_object(Bucket=job_bucket, Key=key)
@@ -95,5 +97,5 @@ def lambda_handler(event, context):
     upload_time = time.time() - upload_start
     print('reducer_upload_time: %s sec' % upload_time)
 
-    write_to_s3(job_bucket, job_id + "/reducer_success/" + str(r_id), "", metadata)
+    write_to_s3(job_bucket, job_id + "/reducer_success/" + r_id, "", metadata)
     return pret

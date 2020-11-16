@@ -59,7 +59,7 @@
         "s3:PutObjectVersionAcl"
       ],
       "Resource": [
-        "arn:aws:s3:::mr-lambda1/*"
+        "arn:aws:s3:::jg-marla-output1/*"
       ]
     },
     {

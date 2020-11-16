@@ -28,7 +28,10 @@ s3_client = boto3.client('s3')
 
 # Mapper의 결과가 작성될 S3 Bucket 위치
 TASK_MAPPER_PREFIX = "task/mapper/"
-SORT_NUM = 10
+# 0~9: 아스키:48~57
+# A~z: 아스키:65~122
+# 48 ~ 122
+SORT_NUM = 75
 
 
 # 주어진 bucket 위치 경로에 파일 이름이 key인 object와 data를 저장합니다.
@@ -55,6 +58,7 @@ def lambda_handler(event, context):
 
     # 모든 key를 다운로드하고 Map을 처리합니다.
     download_time = 0
+    print('download_start_time: ', time.time())
     for key in src_keys:
         download_start = time.time()
         response = s3_client.get_object(Bucket=src_bucket, Key=key)
@@ -65,19 +69,20 @@ def lambda_handler(event, context):
             line_count += 1
             try:
                 data = line.split(',')
-                srcIp = data[0][:8]
-                for first_num in range(SORT_NUM):
-                    if int(srcIp[0]) == first_num:
-                        if srcIp[0] not in output:
-                            output[srcIp[0]] = {}
-                        if srcIp not in output[srcIp[0]]:
-                            output[srcIp[0]][srcIp] = 0
-                        output[srcIp[0]][srcIp] += float(data[3])
+                key_value = data[1]
+                for first in range(SORT_NUM):
+                    first_idx = chr(first + 48)
+                    if key_value[0] == first_idx:
+                        if key_value[0] not in output:
+                            output[key_value[0]] = {}
+                        if key_value not in output[key_value[0]]:
+                            output[key_value[0]][key_value] = 0
+                        output[key_value[0]][key_value] += 1
             except Exception as e:
-                print('error', e)
+                print(e)
+    print('download_end_time: ', time.time())
     print('mapper_download_time: %s sec' % download_time)
-
-    print('output: ', output)
+    # print('output: ', output)
     time_in_secs = (time.time() - start_time)
 
     # Mapper의 결과를 전처리, 이후에 S3에 저장
@@ -95,11 +100,13 @@ def lambda_handler(event, context):
 
     # 이 부분을 efs로 변경 시도 해야 할 듯 함.
     upload_time = 0
+    print('mapper_upload_start_time: ', time.time())
     for fname in mapper_fname:
         upload_start = time.time()
         write_to_s3(job_bucket, mapper_fname[fname], json.dumps(output[fname]), metadata)
         upload_time += (time.time() - upload_start)
         write_to_s3(job_bucket, job_id + "/reducer_count/" + fname, '', {})
         write_to_s3(job_bucket, job_id + "/reducer_success/" + 'init', '', {})
+    print('mapper_upload_end_time: ', time.time())
     print('mapper_upload_time: %s sec' % upload_time)
     return pret

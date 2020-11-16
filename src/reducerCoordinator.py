@@ -34,12 +34,13 @@ s3 = boto3.resource('s3')
 s3_client = boto3.client('s3')
 # Lambda session 생성
 lambda_client = boto3.client('lambda')
-SORT_NUM = 10
+SORT_NUM = 75
 
 
 # 주어진 bucket 위치 경로에 파일 이름이 key인 object와 data를 저장합니다.
 def write_to_s3(bucket, key, data, metadata):
     s3.Bucket(bucket).put_object(Key=key, Body=data, Metadata=metadata)
+
 
 # mapper의 파일 개수를 카운트 합니다. 파일 개수가 reducer의 step 수를 결정
 def get_mapper_files(files, sort_num):
@@ -52,6 +53,7 @@ def get_mapper_files(files, sort_num):
         if len(ret) > 0:
             break
     return len(ret)
+
 
 def lambda_handler(event, context):
     start_time = time.time()
@@ -91,7 +93,7 @@ def lambda_handler(event, context):
                     "bucket": bucket,
                     "jobBucket": bucket,
                     "jobId": job_id,
-                    "reducerId": i
+                    "reducerId": chr(i + 48)
                 })
             )
             print(resp)
