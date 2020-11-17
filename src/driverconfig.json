@@ -3,7 +3,7 @@
       "prefix": "",
       "jobBucket": "jg-marla-output1",
       "region": "us-east-1",
-      "lambdaMemory": 512,
+      "lambdaMemory": 1024,
       "concurrentLambdas": 1000,
       "lambda_read_timeout": 300,
       "boto_max_connections": 1000,

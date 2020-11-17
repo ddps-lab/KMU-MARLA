@@ -58,7 +58,7 @@ def lambda_handler(event, context):
 
     # 모든 key를 다운로드하고 Map을 처리합니다.
     download_time = 0
-    print('download_start_time: ', time.time())
+    # print('download_start_time: ', time.time())
     for key in src_keys:
         download_start = time.time()
         response = s3_client.get_object(Bucket=src_bucket, Key=key)
@@ -69,7 +69,7 @@ def lambda_handler(event, context):
             line_count += 1
             try:
                 data = line.split(',')
-                key_value = data[1]
+                key_value = data[0]
                 for first in range(SORT_NUM):
                     first_idx = chr(first + 48)
                     if key_value[0] == first_idx:
@@ -80,7 +80,7 @@ def lambda_handler(event, context):
                         output[key_value[0]][key_value] += 1
             except Exception as e:
                 print(e)
-    print('download_end_time: ', time.time())
+    # print('download_end_time: ', time.time())
     print('mapper_download_time: %s sec' % download_time)
     # print('output: ', output)
     time_in_secs = (time.time() - start_time)
@@ -100,13 +100,13 @@ def lambda_handler(event, context):
 
     # 이 부분을 efs로 변경 시도 해야 할 듯 함.
     upload_time = 0
-    print('mapper_upload_start_time: ', time.time())
+    # print('mapper_upload_start_time: ', time.time())
     for fname in mapper_fname:
         upload_start = time.time()
         write_to_s3(job_bucket, mapper_fname[fname], json.dumps(output[fname]), metadata)
         upload_time += (time.time() - upload_start)
         write_to_s3(job_bucket, job_id + "/reducer_count/" + fname, '', {})
         write_to_s3(job_bucket, job_id + "/reducer_success/" + 'init', '', {})
-    print('mapper_upload_end_time: ', time.time())
+    # print('mapper_upload_end_time: ', time.time())
     print('mapper_upload_time: %s sec' % upload_time)
     return pret

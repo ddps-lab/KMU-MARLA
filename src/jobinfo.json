@@ -1,7 +1,7 @@
 {
     "jobId": "bl-release",
     "jobBucket": "jg-marla-output1",
-    "mapCount": 6,
+    "mapCount": 3,
     "reducerFunction": "BL-reducer-bl-release",
     "reducerHandler": "reducer.lambda_handler"
 }

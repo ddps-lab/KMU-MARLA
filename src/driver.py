@@ -104,9 +104,10 @@ all_keys = []
 for obj in s3.Bucket(bucket).objects.filter(Prefix=config["prefix"]).all():
     all_keys.append(obj)
 
-print(all_keys)
+# print(all_keys)
 bsize = lambdautils.compute_batch_size(all_keys, lambda_memory, concurrent_lambdas)
 batches = lambdautils.batch_creator(all_keys, bsize)
+print('batches: ',batches)
 n_mappers = len(batches)  # 최종적으로 구한 batches의 개수가 mapper로 결정
 
 # 2. Lambda Function 을 생성합니다.
