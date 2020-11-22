@@ -33,7 +33,7 @@ python3.6으로 구동이 되는 제가 작업한 코드는 다음의 깃헙에 
 
 ## 전반적인 아키텍쳐
 
-[##_Image|kage@mEkz4/btqNWFuvr0T/bb6cHahLd326gSOnec1Ex0/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/1.png)
 
 ## Input bucket
 
@@ -43,10 +43,9 @@ s3://big-data-benchmark/pavlo/text/1node/uservisits/ 에 MapReduce 작업을 위
 aws s3 ls s3://big-data-benchmark/pavlo/text/1node/uservisits/
 ```
 
-[##_Image|kage@c6dfFX/btqNXecqPvb/p3mMspyHfGVILKN5wjkEvK/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/2.png)
 
-[##_Image|kage@dvy4Tq/btqNVCefYGI/OtooEXKYDJKoXmdsCULsyK/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
-
+![ex_screenshot](./assets/2.5.png)
   
 다음과 같이 122MB정도의 파일들이 총 202개 있음을 확인 했습니다.
 
@@ -54,9 +53,9 @@ aws s3 ls s3://big-data-benchmark/pavlo/text/1node/uservisits/
 aws s3 cp s3://big-data-benchmark/pavlo/text/1node/uservisits/part-00000 .
 ```
 
-[##_Image|kage@b2V2fg/btqNWDKgSw2/piWcRz9gyxnpldYBGlJ410/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/3.png)
 
-[##_Image|kage@bqCjF8/btqNU2dbPEf/1Hl24k9QETk8n4C7GoxojK/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/4.png)
 
 각 input file은 다음과 같은 포멧들로 구성되어 있습니다.
 
@@ -120,7 +119,8 @@ def create_lambda_function(self):
 
 로컬에 있는 python 파일들을 zip으로 묶고 그 zip을 배포합니다.
 
-[##_Image|kage@HAmSP/btqNYwcysZP/SNpDVUJI2UdPen10IrvHT0/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/5.png)
+
 
 각각 Coordinator, Reducer, Mapper에 대한 함수가 배포되었습니다.
 
@@ -185,7 +185,7 @@ for key in src_keys:
 
 작업하는 파일을 line별로 탐색하여 map 작업을 진행합니다. 파일의 내용 중 source ip 부분을 추출하여 key로 삼습니다. adRevenue부분을 value로 더해갑니다.
 
-[##_Image|kage@bXkz6m/btqNYwKqVxk/j4sb2K9LqWEF1yKTDOE3Z0/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/6.png)
 
 output
 
@@ -200,13 +200,13 @@ write_to_s3(job_bucket, mapper_fname, json.dumps(output), metadata)
 
 map 작업이 끝나면, s3에서 지정된 경로에 결과를 저장합니다.
 
-[##_Image|kage@0tawt/btqNVBfj2St/SD2trAj9zAPmcLgWTQ7vR1/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/7.png)
 
-[##_Image|kage@Av77W/btqNVSA6m8y/qOXfXEklZh16r7XoWFqIU1/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/8.png)
 
 map 작업에 대한 결과 파일 중 일부를 살펴보았습니다.
 
-[##_Image|kage@REPIT/btqNZNrBlKm/nRnhkQQM8njmYUNzcJZbMK/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/9.png)
 
   
 다음과 같이 { key(source ip) : value(adRevenue) } 의 형태로 mapping 된 결과를 확인했습니다.
@@ -232,9 +232,10 @@ driver.py에서는 지속적으로 완료된 mapper의 개수를 체크합니다
 
 s3에 map의 결과가 저장되면 Coordinator의 역할을 하는 lambda 함수를 트리깅 합니다.
 
-[##_Image|kage@bCmBMi/btqNWFg1moj/wf3aBWcWtCwTq7gkYWxJSk/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/10.png)
 
-[##_Image|kage@rpTqf/btqN00RLJYA/0O0h5c4VtPks1GlK9An571/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/11.png)
+
 
 ```
 # reducerCoordinator.py line: 144
@@ -330,9 +331,10 @@ reducer 하나의 step이 끝날 때 마다 s3에 결과 파일들을 업로드 
 
 다음과 같이 s3에 현재 reducer의 state가 몇까지 왔는지 체크 용도의 파일이 생성됩니다.
 
-[##_Image|kage@boYuws/btqNZNLTSl2/BHqRjbHbE52UJ2YWhhhDPK/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/12.png)
 
-[##_Image|kage@Ox23n/btqN01wnwFJ/03YGTLs5OHZ0GqofQvK9x0/img.png|alignCenter|width="100%" data-origin-width="0" data-origin-height="0" data-ke-mobilestyle="widthContent"|||_##]
+![ex_screenshot](./assets/13.png)
+
 
   
 각 step별로 완료된 reducer 결과 파일은 위의 경로에 저장되어 있습니다.
