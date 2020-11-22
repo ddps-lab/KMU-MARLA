@@ -8,8 +8,11 @@
 <image src="./assets/MARLA_Architecture.jpeg" />
 <br/>
 
-블로그에 
+블로그에 아래의 내용을 정리하였습니다.
 https://manchann.tistory.com/4
+
+
+<br/>
 
 원문 내용의 주소와 깃헙 주소는 다음과 같습니다.
 
